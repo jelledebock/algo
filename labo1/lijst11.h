@@ -52,10 +52,11 @@ class Lijst: private Lijstknoopptr<T>{
     };
     iterator begin() const;
     iterator end() const;
-    Lijst<T>& operator=(Lijstknoopptr<T>&& l);
+
     Lijst<T>& operator=(Lijstknoopptr<T>& l);
     Lijst<T>& operator=(const Lijst<T>&);
-
+    Lijst<T>& operator=(Lijstknoopptr<T>&& l);
+    
     protected: 
     const Lijst<T>* zoek(const T&) const;          //geimplementeerd
     Lijst* zoek(const T&);
@@ -66,7 +67,12 @@ class Lijst: private Lijstknoopptr<T>{
 template<class T>
 Lijst<T>::Lijst(Lijst<T>&& l)
 {
-    *this = l;
+    this->get()->sl = l.get()->sl;
+    this->get()->volgend = l.get()->volgend;
+
+    l.get()->volgend = NULL;
+    l.get()->sl = 0;
+
 }
 
 template<class T>
@@ -103,8 +109,12 @@ Lijst<T>& Lijst<T>::operator=(const Lijst<T>& l)
 template<class T>
 Lijst<T>& Lijst<T>::operator=(Lijstknoopptr<T>&& l)
 {
-    *this = l;
+    this->get()->sl = l->sl;
+    this->get()->volgend = l->volgend;
 
+    l->volgend = NULL;
+    l->sl = 0;
+    
     return *this;
 }
 
@@ -112,7 +122,8 @@ Lijst<T>& Lijst<T>::operator=(Lijstknoopptr<T>&& l)
 template<class T>
 Lijst<T>& Lijst<T>::operator=(Lijstknoopptr<T>& l)
 {
-    *this = std::move(l);
+    this->get().sl = l->sl;
+    this->get().volgend = l->volgend;
 
     return *this;
 }

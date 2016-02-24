@@ -94,3 +94,4 @@ int main(){
     verwijderd+=12;
     Lijstknoop<int>::controle(gemaakt,verwijderd);
     return 0;
+}

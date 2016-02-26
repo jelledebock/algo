@@ -11,6 +11,7 @@ using std::ostream;
 #include <cstdlib>   // voor rand - opletten!! 
 #include <vector>
 #include <set>
+#include <iomanip>
 using std::vector;
 
 template<class T>
@@ -38,7 +39,6 @@ class Sortvector:public vector<T>{
 
         bool is_gesorteerd() const;
         bool is_range() const;
-
         friend ostream& operator<<(ostream& os, const Sortvector<T>& s){
             s.schrijf(os);
             return os;
@@ -172,7 +172,6 @@ void Sortvector<T>::schrijf(ostream & os)const{
     }
     os<<"\n";
 }
-
 
 
 #endif

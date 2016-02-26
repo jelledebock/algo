@@ -1,11 +1,14 @@
 #ifndef __SORTEERMETHODE
 #define __SORTEERMETHODE
-#include "sortvector.h"
 #include <iostream>
     using std::endl;
     using std::cout;
     using std::move;
+    using std::vector;
 #include <algorithm>   // voor sort()-methode uit STL
+#include "chrono.h"
+#include "sortvector.h"
+#include <iomanip>
 
 template <typename T>
 class Sorteermethode{
@@ -31,6 +34,44 @@ void meet(int kortste, int langste, ostream& os);
 
 };
 
+template <typename T>
+void meet(int kortste, int langste, Sorteermethode<T>& sm, ostream& os)
+{
+    int size=kortste;
+    double t_gesorteerd;
+    double t_omgekeerd;
+    double t_random;
+    Sortvector<T> sv(0);
+    os<<std::setw(12)<<"lengte"<<std::setw(12)<<"random"<<std::setw(12)<<"gesorteerd"<<std::setw(12)<<"omgekeerd"<<std::endl;
+    while(size<langste)
+    {
+        sv.resize(size);
+        //Gesorteerde volgorde
+        sv.vul_range();
+        //cout<<"[DEBUG] Range "<<sv;
+        Chrono cr;
+        cr.start();
+        sm(sv);
+        cr.stop();
+        t_gesorteerd = cr.tijd();
+        //Omgekeerde volgorde
+        sv.draai_om();
+        //cout<<"[DEBUG] Reversed "<<sv;
+        cr.start();
+        sm(sv);
+        cr.stop();
+        t_omgekeerd = cr.tijd();
+        //Random volgorde
+        sv.shuffle();
+        //cout<<"[DEBUG] Shuffled "<<sv;
+        cr.start();
+        sm(sv);
+        cr.stop();
+        t_random = cr.tijd();
+        size*=10;
+        os<<std::setw(12)<<size<<std::setw(12)<<t_random<<std::setw(12)<<t_gesorteerd<<std::setw(12)<<t_omgekeerd<<std::endl;
+    }
+}
 /*
  *   STANDARD TEMPLATE LIBRARY SORT
  */
@@ -38,6 +79,7 @@ template <typename T>
 class STLSort : public Sorteermethode<T>{
     public:
         void operator()(vector<T> & v) const;
+        void meet(int,int,ostream&);
 };
 
 template <typename T>
@@ -52,6 +94,7 @@ template <typename T>
 class InsertionSort : public Sorteermethode<T>{
     public:
         void operator()(vector<T> & v) const;   
+        //void meet(int,int,ostream&);
 };
 
 template <typename T>
@@ -78,4 +121,15 @@ class ShellSort : public Sorteermethode<T>{
         void operator()(vector<T> & v) const;
 };
 
+template <typename T>
+void Sorteermethode<T>::meet(int kortste, int langste, ostream& os)
+{
+    ::meet(kortste,langste,*this,os);    
+}
+
+template <typename T>
+void STLSort<T>::meet(int kortste, int langste, ostream& os)
+{
+    ::meet(kortste,langste,*this,os);    
+}
 #endif 

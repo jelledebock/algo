@@ -1,5 +1,3 @@
-*.run
-*.out
-*.o
 testvoorbereiding/
-build/
+bin/*
+make/*

@@ -14,7 +14,7 @@
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
-GTEST_DIR = /usr/local/lib/googletest-master/googletest
+GTEST_DIR = /Users/JelleDeBock/googletest/googletest
 
 # Where to find user code.
 SRC_DIR = ./src

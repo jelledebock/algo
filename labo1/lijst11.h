@@ -31,19 +31,49 @@ ostream& operator<<(ostream& os, const Lijst<T>& l);
 
 template<class T>
 class Lijst: private Lijstknoopptr<T>{
-    public: 
-    Lijst(){};
-    Lijst(Lijst<T>&& l);
-    Lijst(const Lijst<T>& l);
-    void voegToe(const T&);                      //geimplementeerd
-    int geefaantal(const T&) const;               //geimplementeerd
-    int geefaantal() const;                      //geimplementeerd
-    void verwijder(const T&);                    //geimplementeerd
-    void verwijderEerste();                      //geimplementeerd
-    void insertionsort();                        //geimplementeerd
-    void schrijf(ostream & os) const;
-    Lijst<T>* zoekGesorteerd(const T& sl);
-    class iterator{
+public:
+//toekenning, constructoren
+//overname constructoren van unique_ptr
+
+// te doen....
+    public: Lijst(){};
+    public: Lijst(const Lijst<T>& _l);
+    public: Lijst(Lijst<T>&& _l);
+    public: Lijst<T>& operator=(Lijst<T>&);
+    public: Lijst<T>& operator=(Lijst<T>&&);
+    public: Lijst<T>& operator=(const Lijst<T>&);
+    public: Lijst<T>& operator=(Lijstknoopptr<T>&&);
+
+//operaties
+//duplicaten zijn toegelaten.
+    public: void voegToe(const T&);
+//geefaantal geeft het aantal keer dat de sleutel voorkomt.
+//gebruikt de zoekfunctie om door de lijst te lopen!
+//zonder argument: geef lengte lijst
+    public: int geefaantal(const T&) const;
+    public: int geefaantal() const;
+//verwijder verwijdert slechts het eerste exemplaar met de gegeven
+//T, en geeft geen fout als de T niet gevonden wordt.
+//gebruik de zoekfunctie om door de lijst te lopen!
+    public: void verwijder(const T&);
+//verwijder eerste knoop.
+    public: void verwijderEerste();
+    public: void insertionsort();
+// zoek geeft een pointer naar de Lijst die de sleutelwaarde bevat,
+// en geeft een pointer naar de lege lijst op het einde als de sleutel niet
+// voorkomt.
+    protected: const Lijst* zoek(const T&) const;
+    protected: Lijst* zoek(const T&);
+//preconditie zoekgesorteerd: lijst is gesorteerd
+//teruggeefwaarde: wijst naar Lijst waar sl staat/zou moeten staan.
+    protected: Lijst<T>* zoekGesorteerd(const T& sl);
+
+
+//uitschrijven: voor elke knoop de T-waarde, gescheiden door komma's
+    friend ostream& operator<< <>(ostream& os, const Lijst& l);
+    public: void schrijf(ostream & os) const;
+//iterator; gaat ervan uit dat alles const is
+    public: class iterator{
         public:
             iterator(Lijstknoop<T>* l=0);
             const T& operator*() const;
@@ -53,80 +83,152 @@ class Lijst: private Lijstknoopptr<T>{
     iterator begin() const;
     iterator end() const;
 
-    Lijst<T>& operator=(Lijstknoopptr<T>& l);
-    Lijst<T>& operator=(const Lijst<T>&);
-    Lijst<T>& operator=(Lijstknoopptr<T>&& l);
-    
-    protected: 
-    const Lijst<T>* zoek(const T&) const;          //geimplementeerd
-    Lijst* zoek(const T&);
-    
-    friend ostream& operator<< <>(ostream& os, const Lijst& l);
+};
+template<class T>
+Lijst<T>& Lijst<T>::operator=(Lijst<T>&& _l)
+{
+    this->get()->sl = _l.get()->sl;
+    this->get()->volgend = _l.get()->volgend;
+
+    return *this;
+}
+template<class T>
+Lijst<T>& Lijst<T>::operator=(Lijst<T>& _l)
+{
+    if(_l && _l.get())
+    {
+        Lijst<T> hulp = _l.get()->volgend;
+        this->get()->sl = _l.get()->sl;
+        this->get()->volgend = NULL;
+        Lijst<T> hulp2 = *this;
+        while(hulp)
+        {
+            hulp2.get()->volgend = Lijst<T>();
+            hulp2 = hulp2.get()->volgend;
+            hulp2.get()->sl = hulp->sl;
+            hulp2.get()->volgend = hulp->volgend;
+            hulp = hulp.get()->volgend;
+        }
+    }
+    return *this;
+}
+template<class T>
+Lijst<T>& Lijst<T>::operator=(Lijstknoopptr<T>&& _lkptr)
+{
+    this->get()->sl = _lkptr.get()->sl;
+    this->get()->volgend = _lkptr.get()->volgend;
+    return *this;
+}
+template<class T>
+Lijst<T>::Lijst(Lijst<T>&& _l)
+{
+    *this = std::move(_l);
+}
+template<class T>
+Lijst<T>::Lijst(const Lijst<T>& _l)
+{
+    if(_l && _l.get())
+    {
+        Lijst<T> hulp = _l.get()->volgend;
+        this->get()->sl = _l.get()->sl;
+        this->get()->volgend = NULL;
+        Lijst<T> hulp2 = *this;
+        while(hulp)
+        {
+            hulp2.get()->volgend = Lijst<T>();
+            hulp2 = hulp2.get()->volgend;
+            hulp2.get()->sl = hulp->sl;
+            hulp2.get()->volgend = hulp->volgend;
+            hulp = hulp.get()->volgend;
+        }
+    }
+}
+template<class T>
+class Lijstknoop{
+    friend class Lijst<T>;
+    public:
+        Lijst<T> volgend;
+        Lijstknoop(const T&);
+        ~Lijstknoop();
+    protected:
+        T sl;
+#ifdef DEBUG
+public:
+        static bool controle (int gemaakt, int verwijderd);
+protected:
+        static int aantalGemaakt;
+        static int aantalVerwijderd;
+#endif
 };
 
 template<class T>
-Lijst<T>::Lijst(Lijst<T>&& l)
-{
-    this->get()->sl = l.get()->sl;
-    this->get()->volgend = l.get()->volgend;
+int Lijstknoop<T>::aantalGemaakt=0;
+template<class T>
+int Lijstknoop<T>::aantalVerwijderd=0;
 
-    l.get()->volgend = NULL;
-    l.get()->sl = 0;
-
+template<class T>
+Lijstknoop<T>::Lijstknoop(const T& _sl):sl(_sl){
+//    std::cerr<<"Knoop met sleutel "<<sl<<" wordt gemaakt\n";
+    aantalGemaakt++;
 }
 
 template<class T>
-Lijst<T>::Lijst(const Lijst<T>&  l)
-{
-    if(this != &l)
-    {
-        Lijstknoop <T>* tmp = l.get();
-        while (tmp != 0)
-        {
-            voegToe(tmp->sl);
-            tmp = tmp->volgend.get();
-        }
+Lijstknoop<T>::~Lijstknoop(){
+//    std::cerr<<"Knoop met sleutel "<<sl<<" wordt verwijderd\n";
+    aantalVerwijderd++;
+}
+#ifdef DEBUG
+template<class T>
+bool Lijstknoop<T>::controle (int gemaakt, int verwijderd){
+    if (aantalGemaakt==gemaakt && aantalVerwijderd==verwijderd)
+        return true;
+    else{
+        std::cerr<<"Fout bij controle:\n";
+        std::cerr<<"Aantal gemaakte knopen   : "<<aantalGemaakt<<" (moet zijn: "<<gemaakt<<")\n";
+        std::cerr<<"Aantal verwijderde knopen: "<<aantalVerwijderd<<" (moet zijn: "<<verwijderd<<")\n";
+        throw "Mislukte controle";
+    };
+
+};
+#endif
+
+template<class T>
+ostream& operator<<(ostream& os,const Lijst<T>& l){
+#ifdef ITERATOR
+    for (auto&& sleutel: l)
+        os<<sleutel<<", ";
+#else
+    if (l.get()){
+        os<<l.get()->sl<<", ";
+        os<<l.get()->volgend;
     }
+#endif
+    return os;
 }
 
 template<class T>
-Lijst<T>& Lijst<T>::operator=(const Lijst<T>& l)
-{
-    if(this != &l)
-    {
-        *this = NULL;
-
-        Lijstknoop <T>* tmp = l.get();
-        while (tmp != 0)
-        {
-            voegToe(tmp->sl);
-            tmp = tmp->volgend.get();
-        }
+void Lijst<T>::schrijf(ostream & os) const{
+#ifdef ITERATOR
+    if (this->get()!=0){
+        os<<this->get()->sl;
+        std::for_each (++begin(),end(),[&](const T& sl){ os<<" . "<<sl;} );
     }
-    return *this;
+#else
+	{
+        Lijstknoop<T> * kn=this->get();
+        if (kn!=0){
+            os<<kn->sl;
+            kn=kn->volgend.get();
+        };
+        while (kn != 0){
+            os<<" . "<<kn->sl;
+            kn=kn->volgend.get();
+        };
+    }
+#endif
 }
+//oplossing:
 
-template<class T>
-Lijst<T>& Lijst<T>::operator=(Lijstknoopptr<T>&& l)
-{
-    this->get()->sl = l->sl;
-    this->get()->volgend = l->volgend;
-
-    l->volgend = NULL;
-    l->sl = 0;
-    
-    return *this;
-}
-
-
-template<class T>
-Lijst<T>& Lijst<T>::operator=(Lijstknoopptr<T>& l)
-{
-    this->get().sl = l->sl;
-    this->get().volgend = l->volgend;
-
-    return *this;
-}
 
 template<class T>
 const Lijst<T>* Lijst<T>::zoek(const T& sl) const{
@@ -135,7 +237,6 @@ const Lijst<T>* Lijst<T>::zoek(const T& sl) const{
         pl=&(pl->get()->volgend);
     return pl;
 }
-
 template<class T>
 int Lijst<T>::geefaantal(const T& sl) const{
     const Lijst<T>* plaats=zoek(sl);
@@ -205,96 +306,7 @@ void Lijst<T>::insertionsort(){
         *plaats=std::move(dummy);
 
     };
+    
+    
 };
-template<class T>
-class Lijstknoop{
-    friend class Lijst<T>;
-    public:
-        Lijst<T> volgend;
-        Lijstknoop(const T&);
-        ~Lijstknoop();
-        bool operator!=(const Lijstknoop<T>& lk) const
-        {
-            return this != &lk;
-        }
-    protected:
-        T sl;
-#ifdef DEBUG
-public:
-        static bool controle (int gemaakt, int verwijderd);
-protected:
-        static int aantalGemaakt;
-        static int aantalVerwijderd;
-#endif
-};
-
-template<class T>
-int Lijstknoop<T>::aantalGemaakt=0;
-template<class T>
-int Lijstknoop<T>::aantalVerwijderd=0;
-
-template<class T>
-Lijstknoop<T>::Lijstknoop(const T& _sl):sl(_sl){
-//    std::cerr<<"Knoop met sleutel "<<sl<<" wordt gemaakt\n";
-    aantalGemaakt++;
-}
-
-template<class T>
-Lijstknoop<T>::~Lijstknoop(){
-//    std::cerr<<"Knoop met sleutel "<<sl<<" wordt verwijderd\n";
-    aantalVerwijderd++;
-}
-#ifdef DEBUG
-template<class T>
-bool Lijstknoop<T>::controle (int gemaakt, int verwijderd){
-    if (aantalGemaakt==gemaakt && aantalVerwijderd==verwijderd)
-        return true;
-    else{
-        std::cerr<<"Fout bij controle:\n";
-        std::cerr<<"Aantal gemaakte knopen   : "<<aantalGemaakt<<" (moet zijn: "<<gemaakt<<")\n";
-        std::cerr<<"Aantal verwijderde knopen: "<<aantalVerwijderd<<" (moet zijn: "<<verwijderd<<")\n";
-        throw "Mislukte controle";
-    };
-
-};
-#endif
-
-template<class T>
-ostream& operator<<(ostream& os,const Lijst<T>& l){
-#ifdef ITERATOR
-    for (auto&& sleutel: l)
-        os<<sleutel<<", ";
-#else
-    if (l.get()){
-        os<<l.get()->sl<<", ";
-        os<<l.get()->volgend;
-    }
-#endif
-    return os;
-}
-
-template<class T>
-void Lijst<T>::schrijf(ostream & os) const{
-#ifdef ITERATOR
-    if (this->get()!= 0){
-        os<<this->get()->sl;
-        std::for_each (++begin(),end(),[&](const T& sl){ os<<" . "<<sl;} );
-    }
-#else
-	{
-        Lijstknoop<T> kn=*this->get();
-        /*if (kn!= 0){
-            os<<kn.sl;
-            kn = kn.volgend;
-        };
-        while (kn != 0){
-            os<<" . "<<kn.sl;
-            kn=kn.volgend->get();
-        };*/
-    }
-#endif
-}
-//oplossing:
-
-
 #endif

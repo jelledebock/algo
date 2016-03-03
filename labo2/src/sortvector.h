@@ -112,6 +112,11 @@ void Sortvector<T>::shuffle()
     template <class T>
 void Sortvector<T>::vul_random_zonder_dubbels()
 {
+    vul_range();
+    shuffle();
+}
+/*void Sortvector<T>::vul_random_zonder_dubbels()
+{
     std::set<T> dubbels;
     for(int i=0;i<vector<T>::size();i++)
     {
@@ -124,7 +129,7 @@ void Sortvector<T>::vul_random_zonder_dubbels()
         dubbels.insert(random);
         vector<T>::operator[](i)=random;
     }
-}
+}*/
 
 
     template <class T>

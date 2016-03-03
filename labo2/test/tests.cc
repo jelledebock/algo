@@ -19,3 +19,18 @@ TEST(Sortvector, vul_omgekeerd_test)
     for(int i=0;i<6;i++)
         EXPECT_EQ(sv[i], sv.size()-i-1);
 }
+
+TEST(Sorteermethode, test_shellsort_int)
+{
+    Sortvector<int> vec(100);
+    Sortvector<int> sorted(100);
+    sorted.vul_range();
+    vec.vul_random_zonder_dubbels();
+    ShellSort<int> ss;
+    ss(vec);
+    for(int i=0;i<vec.size();i++)
+    {
+        EXPECT_EQ(sorted[i],vec[i]);
+    }
+}
+

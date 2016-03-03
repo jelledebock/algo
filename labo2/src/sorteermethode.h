@@ -122,6 +122,27 @@ class ShellSort : public Sorteermethode<T>{
 };
 
 template <typename T>
+void ShellSort<T>::operator()(vector<T> & v) const
+{
+    vector<int> breedtes({9427969,4188161,2354689,1045505,587521,260609,64769,146305,36289,16001,8929,3905,2161,929,505,209,109,41,19,5,1});
+    for(int breedte : breedtes)
+    {
+        for(int i = breedte; i<v.size();i++)
+        {
+            T tmp = move(v[i]);
+            int j = i-breedte;
+            while(j>=0 && tmp< v[j])
+            {
+                v[j+breedte]=move(v[j]);
+                j-=breedte;
+            }
+            v[j+breedte]=tmp; 
+        }
+    }
+
+}
+
+template <typename T>
 void Sorteermethode<T>::meet(int kortste, int langste, ostream& os)
 {
     ::meet(kortste,langste,*this,os);    

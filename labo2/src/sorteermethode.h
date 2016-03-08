@@ -1,10 +1,10 @@
 #ifndef __SORTEERMETHODE
 #define __SORTEERMETHODE
 #include <iostream>
-    using std::endl;
-    using std::cout;
-    using std::move;
-    using std::vector;
+using std::endl;
+using std::cout;
+using std::move;
+using std::vector;
 #include <algorithm>   // voor sort()-methode uit STL
 #include "chrono.h"
 #include "sortvector.h"
@@ -15,26 +15,26 @@ class Sorteermethode{
     public:
         virtual void operator()(vector<T> & v) const = 0;
 
-// Deze externe procedure schrijft naar os een overzicht (met de nodige ornamenten) 
-// met de snelheid van de opgegeven sorteermethode *this. Er wordt 1 lijn uitgedrukt voor elke mogelijke
-// grootte. Deze groottes zijn kleinste, 10*kleinste, 100*kleinste,
-// enzovoorts, tot aan grootste.
-// Op een lijn staat de snelheid van de methode toegepast op
-// (1) een random tabel
-// (2) een al gesorteerde tabel.
-// (3) een omgekeerd gesorteerde tabel.
+        // Deze externe procedure schrijft naar os een overzicht (met de nodige ornamenten) 
+        // met de snelheid van de opgegeven sorteermethode *this. Er wordt 1 lijn uitgedrukt voor elke mogelijke
+        // grootte. Deze groottes zijn kleinste, 10*kleinste, 100*kleinste,
+        // enzovoorts, tot aan grootste.
+        // Op een lijn staat de snelheid van de methode toegepast op
+        // (1) een random tabel
+        // (2) een al gesorteerde tabel.
+        // (3) een omgekeerd gesorteerde tabel.
 
-// Deze functie werkt alleen als T een toekenning van een int toelaat,
-// zodat bv.
-//    T a=5;
-// geldig is.
-void meet(int kortste, int langste, ostream& os);
+        // Deze functie werkt alleen als T een toekenning van een int toelaat,
+        // zodat bv.
+        //    T a=5;
+        // geldig is.
+        void meet(int kortste, int langste, ostream& os);
 
 
 
 };
 
-template <typename T>
+    template <typename T>
 void meet(int kortste, int langste, Sorteermethode<T>& sm, ostream& os)
 {
     int size=kortste;
@@ -114,18 +114,23 @@ void InsertionSort<T>::operator()(vector<T> & v) const{
 /*
  *   SHELLSORT
  */
- 
+
 template <typename T>
-class ShellSort : public Sorteermethode<T>{
+class ShellBase : public Sorteermethode<T>{
     public:
+        vector<int> breedtes;
         void operator()(vector<T> & v) const;
+        void meet(int,int,ostream&);
+        void setBreedtes(vector<int> &v)
+        {
+            breedtes = std::move(v);
+        }
 };
 
 template <typename T>
-void ShellSort<T>::operator()(vector<T> & v) const
+void ShellBase<T>::operator()(vector<T> & v) const
 {
-    vector<int> breedtes({9427969,4188161,2354689,1045505,587521,260609,64769,146305,36289,16001,8929,3905,2161,929,505,209,109,41,19,5,1});
-    for(int breedte : breedtes)
+    for(int breedte : this->breedtes)
     {
         for(int i = breedte; i<v.size();i++)
         {
@@ -143,12 +148,56 @@ void ShellSort<T>::operator()(vector<T> & v) const
 }
 
 template <typename T>
+class ShellSort : public ShellBase<T>
+{
+    public:
+        ShellSort()
+        {
+            vector<int> tmp = {9427969,4188161,2354689,1045505,587521,260609,64769,146305,36289,16001,8929,3905,2161,929,505,209,109,41,19,5,1};
+            ShellBase<T>::setBreedtes(tmp);
+        }
+};
+
+template <typename T>
+class ShellShellSort : public ShellBase<T>
+{
+    public:
+        ShellShellSort()
+        {
+            ShellBase<T>::breedtes = {};
+        }
+        void operator()(vector<T> & v);
+};
+
+template <typename T>
+void ShellShellSort<T>::operator()(vector<T> & v)  
+{
+    vector<int> tmp = {};
+    int i=v.size()/2;
+
+    while(i!=0)
+    {
+        tmp.push_back(i);
+        i/=2;
+    }
+    ShellBase<T>::setBreedtes(tmp);
+    ShellBase<T>::operator()(v);
+}
+
+
+    template <typename T>
+void ShellBase<T>::meet(int kortste, int langste, ostream& os)
+{
+    ::meet(kortste,langste,*this,os);
+}
+
+    template <typename T>
 void Sorteermethode<T>::meet(int kortste, int langste, ostream& os)
 {
     ::meet(kortste,langste,*this,os);    
 }
 
-template <typename T>
+    template <typename T>
 void STLSort<T>::meet(int kortste, int langste, ostream& os)
 {
     ::meet(kortste,langste,*this,os);    

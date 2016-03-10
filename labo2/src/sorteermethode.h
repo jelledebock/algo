@@ -5,11 +5,15 @@ using std::endl;
 using std::cout;
 using std::move;
 using std::vector;
+using std::ofstream;
+using std::string;
 #include <algorithm>   // voor sort()-methode uit STL
 #include "chrono.h"
 #include "sortvector.h"
 #include <iomanip>
+#include <fstream>
 
+enum Ordening {Random,Stijgend,Dalend};
 template <typename T>
 class Sorteermethode{
     public:
@@ -29,13 +33,49 @@ class Sorteermethode{
         //    T a=5;
         // geldig is.
         void meet(int kortste, int langste, ostream& os);
-
+        static void vergelijk(int, int, Ordening,ostream&);
+        template<class S, class... _args>
+        static void vergelijk(int, int, Ordening, ostream&, S , _args ...);
 
 
 };
 
     template <typename T>
-void meet(int kortste, int langste, Sorteermethode<T>& sm, ostream& os)
+void Sorteermethode<T>::vergelijk(int min, int max, Ordening sorteer_volgorde, ostream& out)
+{
+
+}
+    template <typename T> template<class S, class... _args> 
+void Sorteermethode<T>::vergelijk(int min, int max, Ordening sorteer_volgorde, ostream& out, S eerste, _args ... andere)
+{
+    out<<typeid(*eerste).name()<<",";
+    for(int i = min; i<=max; i+=10)
+    {
+        Sortvector<T> sv(i);
+        switch(sorteer_volgorde)
+        {
+            case Random:
+                sv.vul_random();
+                break;
+            case Stijgend:
+                sv.vul_range();
+                break;
+            case Dalend:
+                sv.vul_omgekeerd();
+                break;
+        }
+        Chrono cr;
+        cr.start();
+        eerste->operator()(sv);
+        cr.stop();
+        out<<cr.tijd()<<",";
+    }
+    out<<endl;
+    Sorteermethode<T>::vergelijk(min,max,sorteer_volgorde,out,andere...);
+}
+
+    template <typename T>
+void meet(int kortste, int langste, Sorteermethode<T> *sm, ostream& os)
 {
     int size=kortste;
     double t_gesorteerd;
@@ -51,23 +91,26 @@ void meet(int kortste, int langste, Sorteermethode<T>& sm, ostream& os)
         //cout<<"[DEBUG] Range "<<sv;
         Chrono cr;
         cr.start();
-        sm(sv);
+        sm->operator()(sv);
         cr.stop();
+        //cout<<"[DEBUG] Range sorted"<<sv;
         t_gesorteerd = cr.tijd();
         //Omgekeerde volgorde
         sv.draai_om();
         //cout<<"[DEBUG] Reversed "<<sv;
         cr.start();
-        sm(sv);
+        sm->operator()(sv);
         cr.stop();
         t_omgekeerd = cr.tijd();
+        //cout<<"[DEBUG] Reversed sorted"<<sv;
         //Random volgorde
         sv.shuffle();
         //cout<<"[DEBUG] Shuffled "<<sv;
         cr.start();
-        sm(sv);
+        sm->operator()(sv);
         cr.stop();
         t_random = cr.tijd();
+        //cout<<"[DEBUG] Shuffled Sorted"<<sv;
         size*=10;
         os<<std::setw(12)<<size<<std::setw(12)<<t_random<<std::setw(12)<<t_gesorteerd<<std::setw(12)<<t_omgekeerd<<std::endl;
     }
@@ -118,12 +161,19 @@ void InsertionSort<T>::operator()(vector<T> & v) const{
 template <typename T>
 class ShellBase : public Sorteermethode<T>{
     public:
-        vector<int> breedtes;
+        mutable vector<int> breedtes;
         void operator()(vector<T> & v) const;
         void meet(int,int,ostream&);
-        void setBreedtes(vector<int> &v)
+        void set_breedtes(vector<int> &v) const
         {
             breedtes = std::move(v);
+        }
+        void print_breedtes() const
+        {
+            cout<<"Breedtes : ";
+            for(int breedte : breedtes)
+                cout<<breedte<<"\t";
+            cout<<endl;
         }
 };
 
@@ -154,7 +204,7 @@ class ShellSort : public ShellBase<T>
         ShellSort()
         {
             vector<int> tmp = {9427969,4188161,2354689,1045505,587521,260609,64769,146305,36289,16001,8929,3905,2161,929,505,209,109,41,19,5,1};
-            ShellBase<T>::setBreedtes(tmp);
+            ShellBase<T>::set_breedtes(tmp);
         }
 };
 
@@ -166,11 +216,19 @@ class ShellShellSort : public ShellBase<T>
         {
             ShellBase<T>::breedtes = {};
         }
-        void operator()(vector<T> & v);
+        void operator()(vector<T> & v) const;
+        void bereken_reeks(vector<T> &v) const;
 };
 
 template <typename T>
-void ShellShellSort<T>::operator()(vector<T> & v)  
+void ShellShellSort<T>::operator()(vector<T> & v) const 
+{
+    bereken_reeks(v);
+    ShellBase<T>::operator()(v);
+}
+
+template <typename T>
+void ShellShellSort<T>::bereken_reeks(vector<T> &v) const
 {
     vector<int> tmp = {};
     int i=v.size()/2;
@@ -180,26 +238,24 @@ void ShellShellSort<T>::operator()(vector<T> & v)
         tmp.push_back(i);
         i/=2;
     }
-    ShellBase<T>::setBreedtes(tmp);
-    ShellBase<T>::operator()(v);
+    ShellBase<T>::set_breedtes(tmp);
 }
-
 
     template <typename T>
 void ShellBase<T>::meet(int kortste, int langste, ostream& os)
 {
-    ::meet(kortste,langste,*this,os);
+    ::meet(kortste,langste,this,os);
 }
 
     template <typename T>
 void Sorteermethode<T>::meet(int kortste, int langste, ostream& os)
 {
-    ::meet(kortste,langste,*this,os);    
+    ::meet(kortste,langste,this,os);    
 }
 
     template <typename T>
 void STLSort<T>::meet(int kortste, int langste, ostream& os)
 {
-    ::meet(kortste,langste,*this,os);    
+    ::meet(kortste,langste,this,os);    
 }
 #endif 

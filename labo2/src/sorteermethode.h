@@ -12,6 +12,7 @@ using std::string;
 #include "sortvector.h"
 #include <iomanip>
 #include <fstream>
+#include "heap.h"
 
 enum Ordening {Random,Stijgend,Dalend};
 template <typename T>
@@ -43,7 +44,6 @@ class Sorteermethode{
     template <typename T>
 void Sorteermethode<T>::vergelijk(int min, int max, Ordening sorteer_volgorde, ostream& out)
 {
-
 }
     template <typename T> template<class S, class... _args> 
 void Sorteermethode<T>::vergelijk(int min, int max, Ordening sorteer_volgorde, ostream& out, S eerste, _args ... andere)

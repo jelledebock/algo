@@ -2,6 +2,7 @@
 #define __HEAP_H
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 using std::ostream;
 using std::vector;
@@ -54,24 +55,23 @@ Heap<T>::Heap(std::vector<T>& _v, int _aantal): v(_v)
 template<class T>
 const T* Heap<T>::geefWortel() const
 {
-    return &v[1];
+    return &v[0];
 }
 
 template<class T>
 void Heap<T>::remove_max_from_heap()
 {
-    T tmp = std::move(v[1]);
-    v[aantal]=std::move(tmp);
+    std::swap(v[aantal-1],v[0]);
     aantal--;
-    bubble_down(1);
+    bubble_down(0);
 }
 
 template<class T>
 int Heap<T>::biggest_child(int parent_pos)
 {
-    int child = parent_pos * 2;
+    int child = parent_pos * 2 + 1;
 
-    if(v[child]<aantal)
+    if(child<aantal)
         if(v[child]<v[child+1])
             child++;
 
@@ -81,18 +81,18 @@ int Heap<T>::biggest_child(int parent_pos)
 template<class T>
 void Heap<T>::bubble_down(int pos)
 {
-    if(!(2*pos > aantal))
+    if(!(2*pos+1 > aantal-1))
     {
         T tmp = std::move(v[pos]);
         int max_pos = biggest_child(pos);
         
         bool ok = true;
 
-        while(ok && v[max_pos]>tmp)
+        while(ok && v[max_pos]>=tmp)
         {
             v[pos] = std::move(v[max_pos]);
             pos = max_pos;
-            if(2*pos <= aantal)
+            if(2*pos+1 <= aantal-1)
                 max_pos = biggest_child(pos);
             else
                 ok =false;
@@ -104,7 +104,8 @@ void Heap<T>::bubble_down(int pos)
 template<class T>
 void Heap<T>::fix_heap()
 {
-    for(int i=aantal/2;i>0;i--)
+    //laatste element heeft index aantal-1, dus niet-bladeren starten vanaf (aantal/2)-1 tot en met 0
+    for(int i=aantal/2-1;i>=0;i--)
         bubble_down(i);
 }
 template<class T>
@@ -119,13 +120,13 @@ void Heap<T>::add_element(T val)
 template<class T>
 void Heap<T>::bubble_up()
 {
-    int i = aantal;
+    int i = aantal-1;
     T tmp = std::move(v[i]);
 
-    while(v[i]>v[(int)i/2])
+    while(v[i]>=v[(int)(i-1)/2])
     {
-        v[i]=std::move(v[(int)i/2]);
-        i /= 2;
+        v[i]=std::move(v[(int)(i-1)/2]);
+        i = (i-1)/2;
     }
     v[i] = std::move(tmp);
 }

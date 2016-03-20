@@ -47,3 +47,17 @@ TEST(Sorteermethode, test_shellshellsort_int)
         EXPECT_EQ(sorted[i],vec[i]);
     }
 }
+
+TEST(Sorteermethode, test_quicksort_int)
+{
+    Sortvector<int> vec(100);
+    Sortvector<int> sorted(100);
+    sorted.vul_range();
+    vec.vul_random_zonder_dubbels();
+    Quicksort<int> qs;
+    qs(vec);
+    for(int i=0;i<vec.size();i++)
+    {
+        EXPECT_EQ(sorted[i],vec[i]);
+    }
+}

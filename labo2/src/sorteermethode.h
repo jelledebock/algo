@@ -41,6 +41,47 @@ class Sorteermethode{
 
 };
 
+template <typename T>
+void quicksort(vector<T> &v, int left, int right)
+{
+    int i=left;
+    int j=right;
+    T tmp;
+    T pivot = v[(i+j)/2];
+
+    while(i < j)
+    {
+        if(v[i] < pivot)
+            i++;
+        if(v[j] > pivot)
+            j--;
+
+        if(i<j)
+        {
+            tmp = std::move(v[i]);
+            v[i] = std::move(v[j]);
+            v[j] = std::move(tmp);
+        }
+    }
+
+    if(left<j)
+        ::quicksort(v,left,j);
+    if(right > i)
+        ::quicksort(v,j+1,right);
+}
+
+template <typename T>
+class Quicksort : public Sorteermethode<T>{
+    public:
+        void operator()(vector<T> & v) const;
+        void meet(int,int,ostream&);
+};
+
+template <typename T>
+void Quicksort<T>::operator()(vector<T> & v)const{
+    ::quicksort(v,0,v.size()-1);
+}
+
     template <typename T>
 void Sorteermethode<T>::vergelijk(int min, int max, Ordening sorteer_volgorde, ostream& out)
 {

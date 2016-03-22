@@ -131,3 +131,136 @@ void selection_sort(vector<T> &v){
 ##Tijdscomplexiteit
 Dit algoritme is verre van efficiënt. $\Theta(n^2)$ (tijdscomplexiteit) en $O(n^2)$ (aantal verplaatsingen).  
 Het algoritme wordt pas efficiënt van zodra je een betere selectieprocedure gaat gebruiken. (zie: heapsort)
+
+#Heap sort
+##Principe
+Een **heap** is een minimale/maximale binaire boom (=maximaal 2 opvolgers) die zodanig geordend is dat elk kindelement kleiner/groter is dan zijn ouderelement.
+
+* **Een kind** (ook blad) is een knoop die geen opvolgers heeft
+* **De wortel** is de eerste knoop bovenaan in de hierarchie van de boom
+* Het **niveau** wordt geteld van boven naar beneden (wortel is niveau 0)
+
+##Bewerkingen op een heap
+*Zie code heap.h (https://github.com/jelledebock/algo/blob/master/labo2/src/heap.h)*
+
+##Het sorteeralgoritme
+Het principe van heapsort is dat je steeds de wortel uit de boom haalt. Dit is het kleinste/grootste element van de dataset. Vervolgens voeg je laatste bladelement in de wortel in en laat je deze
+"omlaag **bubbelen**".
+
+~~~~
+void heapsort(vector<T> tree){
+    while(aantal>0)
+    {
+        std::swap(tree[aantal-1],v[0]);
+        aantal--;
+        bubble_down(0);
+    }
+}
+~~~~
+##Tijdscomplexiteit
+* Constructie $O(n)$
+* Sorteren $O(n\cdot \log{n})$
+
+
+#Merge sort
+##Principe
+Tracht om verschillende gesorteerde deellijsten samen te voegen.
+
+##Code
+~~~~
+
+void merge_sort(vector<T> &v, int l, int r, vector<v> &hulp){
+    //rangschik deel vector v[l]...v[r-1] door samenvoegen
+    //gebruik hulp als hulpvector
+    if(l < r-1){
+        //bereken midden van het interval (l...r)
+        int midden = l+(r-1)/2;
+        //roep recursief op werkend op 2 deelarrays
+        merge_sort(v,l,midden,hulp);
+        merge_sort(v,midden,r,hulp);
+        merge(v,l,midden,r,hulp);
+    }
+}
+
+void merge_sort(vector<T> & v){
+    //gebruik een vector als "hulpje"
+    vector<T> help(v.size());   
+    merge_sort(v,0,v.size(),help);
+}
+
+void merge(vector<T> &v, int l, int m, int r, vector<T>& hulp){
+    int w1 = l, w2 = m+1, hw = 0;
+    while(w1<=m && w2 <= r){
+        hulp[hw++] = (v[w1]<v[w2]?v[w1++]:v[w2++]);
+    }
+    //plaats de overgebleven elementen bij
+    if(w1 > m){
+        while(w2<=r){
+            hulp[hw++] = v[w2++];
+        }
+    }
+    else{
+        while(w1 <= m){
+            hulprij[hw++] = v[w1++];
+        }
+    }
+    //Zet in originele tabel
+    for(hw=l;hw<=r;hw++){
+        v[hw]=hulp[hw];
+    }
+}
+~~~~
+##Tijdscomplexiteit
+* $O(n \log{n})$
+
+#Quick sort
+##Principe
+* Beste keuze wanneer je intern moet sorteren
+* Recursief algoritme
+* Een *willekeurig* element wordt uit de gegevens gekozen en dient als **spil (pivot)**
+* Aan de hand van deze *pivot* worden de gegens in twee delen opgesplitst 
+    - De elementen kleiner dan de pivot
+    - De elementen groter dan de pivot
+* Nadat deze partitionering plaats vond zijn we van de positie van de spil reeds zeker...
+* Herhaal dit totdat alle elementen gesorteerd zijn.
+
+##Code
+~~~~
+//Implementatie met als pivot het eerste element (left pivot)
+void quick_sort(vector<T> &v, int l, int r){
+    //Rangschik deelvector v[l]..[r]
+    if(l<r-1){
+        T pivot = v[l];
+        int i = l, j = r-1;
+        while(v[j]>pivot)
+            j--;
+        while(i<j){
+            std::swap(v[i],v[j]);
+            i++;
+
+            while(v[i] < pivot)
+                i++;
+            j--;
+            while(v[j] > pivot)
+                j--;
+        }
+    }
+    //Roep recursief quicksort op
+    quick_sort(v,1,j);
+    quick_sort(v,j+1,r);
+}
+
+void quicksort(vector<T> &v){
+    quick_sort(v,0,v.size()-1);
+}
+
+~~~~
+## *Opmerking*: keuze van de spil
+Er zijn verschillende mogelijkheden om een spil te kiezen, de keuze van de spil beïnvloedt wel degelijk de uitvoeringstijd van het algoritme. Idealiter zou de spil de rij opdelen in twee delen met gelijke grootte, en dat voor elke stap in de recursie.
+
+* Eerste element in de rij (zie bovenstaande code): werkt prima als de rij willekeurig geordend is. Wanneer ze daarentegen gesorteerd is, dan is deze spilkeuze zeer slecht.
+* Het middelste element is dan weer een prima keuze wanneer de rij reeds gesorteerd is.
+* **Mediaan van drie** staat gelijk aan een gemiddeld goede spil kiezen. Dat wil zeggen een spil die voor alle mogelijke ordeningen rijen gemiddeld gezien het beste gaat presteren. Een mediaan berekenen kost ook vaak tijd en dit is vaak iets wat een performant algoritme kan missen. Hierdoor wordt een schatting gemaakt door een steekproef uit de dataset te nemen (linkse, rechtse en middelste element) en berekent hiervan de mediaan.
+##Tijdscomplexiteit
+* **Gemiddeld** $\Theta(n \log{n})$
+* **Slechtst** $\Theta(n^2)$

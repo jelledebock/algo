@@ -288,7 +288,6 @@ void medianof3( T& array, int low, int high )
 #Radix sort
 ##Principe
 LSD (least significant digit) radix sort
-
 * Sorteer de vector op basis van het laatste beduidende cijfer [0-9]
 * Voeg ze in deze gesorteerde volgorde terug toe aan de vector
 * Herhaal tot je alle cijfers in het getal gehad hebt, en de vector zal gesorteerd zijn
@@ -298,46 +297,16 @@ LSD (least significant digit) radix sort
 
 void radix_sort(vector<T> &v)
 {
-	T i, bucket[MAX], maxVal = 0, digitPosition =1 ;
-	//zoek maximum
-	for(i = 0; i < v.size(); i++) {
-		if(a[i] > maxVal) maxVal = a[i];
-	}
 
-	int pass = 1;  // used to show the progress
-	/* maxVal: this variable decide the while-loop count 
-	           if maxVal is 3 digits, then we loop through 3 times */
-	while(maxVal/digitPosition > 0) {
-		/* reset counter */
-		int digitCount[10] = {0};
-
-		/* count pos-th digits (keys) */
-		for(i = 0; i < v.size(); i++)
-			digitCount[a[i]/digitPosition%10]++;
-
-		/* accumulated count */
-		for(i = 1; i < 10; i++)
-			digitCount[i] += digitCount[i-1];
-
-		/* To keep the order, start from back side */
-		for(i = v.size() - 1; i >= 0; i--)
-			bucket[--digitCount[a[i]/digitPosition%10]] = a[i];
-
-		/* rearrange the original array using elements in the bucket */
-		for(i = 0; i < arraySize; i++)
-			a[i] = bucket[i];
-
-		/* move up the digit position */
-		digitPosition *= 10;
-	}   
 }
 
 ~~~~
+##Tijdscomplexiteit
+* $O(n + K)$ met k het aantal verschillende indexes en N het aantal waardes
 
 #Counting sort
 ##Principe
 Het is wenselijk om de minimale en de maximale waarde in de array te weten.
-
 * Ga over alle elementen van de array
 * Vermeerder de teller in de aanwezigheidsarray (array die bijhoudt hoeveel het element met key "x" vookomt)
 * Loop deze aanwezigheidsarray af en voeg deze toe aan een vector (of andere datastructuur)

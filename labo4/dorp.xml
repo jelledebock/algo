@@ -1,0 +1,140 @@
+<dorpdata>
+  <dorp>
+    <naam>Westhoeke</naam>
+    <straat>
+      <naam>Kerkstraat</naam>
+      <winkel>
+        <naam>Giovanni</naam>
+        <soort>bakker</soort>
+      </winkel>
+      <winkel>
+        <naam>Morgenrust</naam>
+        <soort>beenhouwer</soort>
+      </winkel>
+      <winkel>
+        <naam>De Hoofdzonde</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>Alfa</naam>
+        <soort>kranten</soort>
+      </winkel>
+    </straat>
+    <straat>
+      <naam>Dorpsstraat</naam>
+      <winkel>
+        <naam>Beta</naam>
+        <soort>kranten</soort>
+      </winkel>
+      <winkel>
+        <naam>'t Molenke</naam>
+        <soort>bakker</soort>
+      </winkel>
+      <winkel>
+        <naam>Weltevree</naam>
+        <soort>fietswinkel</soort>
+      </winkel>
+      <winkel>
+        <naam>'t Groot Lawijd</naam>
+        <soort>auto's</soort>
+      </winkel>
+      <winkel>
+        <naam>De Macho</naam>
+        <soort>babykleding</soort>
+      </winkel>
+    </straat>
+  </dorp>
+  <dorp>
+    <naam>Oosthoeke</naam>
+    <straat>
+      <naam>Hoge Weg</naam>
+      <winkel>
+        <naam>Het drankorgel</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>Het Warme Nestje</naam>
+        <soort>bakker</soort>
+      </winkel>
+    </straat>
+    <straat>
+      <naam>Grote Baan</naam>
+      <winkel>
+        <naam>Bij Fons en Liza</naam>
+        <soort>beenhouwer</soort>
+      </winkel>
+      <winkel>
+        <naam>De Feniks</naam>
+        <soort>kleding</soort>
+      </winkel>
+    </straat>
+  </dorp>
+  <dorp>
+    <naam>Balegem</naam>
+    <straat>
+      <naam>Gootje</naam>
+      <winkel>
+        <naam>Het drankorgel</naam>
+        <soort>supermarkt</soort>
+      </winkel>
+      <winkel>
+        <naam>'t Groot Lawijd</naam>
+        <soort>babykleding</soort>
+      </winkel>
+      <winkel>
+        <naam>Morgenrust</naam>
+        <soort>bakker</soort>
+      </winkel>
+      <winkel>
+        <naam>Beta</naam>
+        <soort>kranten</soort>
+      </winkel>
+    </straat>
+    <straat>
+      <naam>Broek</naam>
+      <winkel>
+        <naam>'t Molenke</naam>
+        <soort>fietswinkel</soort>
+      </winkel>
+      <winkel>
+        <naam>Weltevree</naam>
+        <soort>auto's</soort>
+      </winkel>
+    </straat>
+    <straat>
+      <naam>Leenstraat</naam>
+      <winkel>
+        <naam>Giovanni</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>Morgenrust</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>Alfa</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>Beta</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>'t Molenke</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>Weltevree</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>De Feniks</naam>
+        <soort>kroeg</soort>
+      </winkel>
+      <winkel>
+        <naam>Bij Fons en Liza</naam>
+        <soort>kroeg</soort>
+      </winkel>
+    </straat>
+  </dorp>
+</dorpdata>
